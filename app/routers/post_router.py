@@ -17,8 +17,8 @@ post_router = APIRouter(
 @post_router.get('/{id}', response_model = schema.PostOut)
 def get_post_by_id(id: int, db:Session = Depends(get_db), current_user: user_schema.UserOut = Depends(get_current_user)):
     post_service = PostService(db, current_user)
-    post = post_service.get_post_by_id(id)
-    return post
+    post_data = post_service.get_post_by_id(id)
+    return post_data
 
 @post_router.get('/', response_model = List[schema.PostOut])
 def get_all_posts(db:Session = Depends(get_db), current_user: user_schema.UserOut = Depends(get_current_user)):

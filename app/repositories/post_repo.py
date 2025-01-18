@@ -1,9 +1,11 @@
 from app.repositories import BaseRepository
-from app.models import PostModel
+from app.models import PostModel, VoteModel
 from app.schemas import PostCreate
 from app import Exceptions
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.schemas.user_schema import UserOut
+from app.schemas.post_schema import PostOut
 
 
 class PostRespository(BaseRepository):
@@ -13,16 +15,20 @@ class PostRespository(BaseRepository):
         self.current_user = current_user
 
     def find_by_id(self, id: int):
-        post = self.db.query(PostModel).filter(PostModel.id == id).first()
+        # post = self.db.query(PostModel).filter(PostModel.id == id).first()
+        post_data = self.db.query(PostModel, func.count(VoteModel.post_id).label("votes")).join(
+        VoteModel, VoteModel.post_id == PostModel.id, isouter=True).group_by(PostModel.id).filter(PostModel.id == id).first()
+
         if not post:
             raise Exceptions.exception_404()
-        if not post.owner_id == self.current_user.id:
-            raise Exceptions.exception_404()
-        return post
+        post, votes = post_data
+        return PostOut(post=post, votes=votes)
     
     def find_all(self):
-        posts = self.db.query(PostModel).filter(PostModel.owner_id == self.current_user.id).all()
-        return posts
+        post_data = self.db.query(PostModel, func.count(VoteModel.post_id).label("votes")).join(VoteModel, VoteModel.post_id == PostModel.id, isouter= True).group_by(PostModel.id).all()
+        # posts = self.db.query(PostModel).filter(PostModel.owner_id == self.current_user.id).all()
+        results = [{PostOut.post:post, PostOut.votes: votes} for post, votes in post_data]
+        return results
     
     def save(self, new_post: PostCreate, user_id):
         post = PostModel(owner_id = user_id, **dict(new_post))
