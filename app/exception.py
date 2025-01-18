@@ -9,5 +9,10 @@ class Exceptions:
     
     @staticmethod
     def exception_400(details: str = ""):
-        details = "Payload Issue"
+        details = "Payload Issue" if not details else details
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=details)
+    
+    @staticmethod
+    def exception_401(details: str = ""):
+        details = "Invalid Credentials" if not details else details
+        return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=details)

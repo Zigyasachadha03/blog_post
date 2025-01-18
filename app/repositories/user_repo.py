@@ -1,6 +1,6 @@
 from app.repositories import BaseRepository
 from sqlalchemy.orm import Session
-from app.schemas.user_schema import UserCreate
+from app.schemas.user_schema import UserCreate, UserOut
 from app.models import UserModel
 from app.utils import hash_password
 from app.exception import Exceptions
@@ -34,6 +34,7 @@ class UserRepository(BaseRepository):
         if not user.first():
             raise Exceptions.exception_404()
         user.delete(synchronize_session=False)
+        self.db.commit()
         return
     
     def update(self, id: int, upd_user: UserCreate):
@@ -41,7 +42,7 @@ class UserRepository(BaseRepository):
 
         if not user.first():
             raise Exceptions.exception_404()
-        
+        upd_user.password = hash_password(upd_user.password)
         user.update(dict(upd_user))
         self.db.commit()
         return user.first()

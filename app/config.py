@@ -6,6 +6,9 @@ class Setting(BaseSettings):
     database_port: int
     database_name: str
     database_host: str
+    secret_key: str
+    algorithm: str
+    access_expires_in_minutes: int
 
 
     class Config():

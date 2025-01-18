@@ -1,6 +1,6 @@
 from app.repositories import UserRepository
 from sqlalchemy.orm import Session
-from app.schemas.user_schema import UserCreate
+from app.schemas.user_schema import UserCreate, UserOut
 
 
 class UserService:
@@ -10,7 +10,7 @@ class UserService:
     def get_all(self):
         return self.repository.find_all()
     
-    def get_user_by_id(self, id: int):
+    def get_user(self, id: int):
         return self.repository.find_by_id(id)
     
     def create_user(self, new_user: UserCreate):
@@ -19,5 +19,5 @@ class UserService:
     def delete_user(self, id: int):
         return self.repository.delete(id)
     
-    def update_user(self, id: int, upd_user: UserCreate):
+    def update_user(self, id: int, upd_user: UserCreate,):
         return self.repository.update(id, upd_user)

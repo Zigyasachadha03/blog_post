@@ -11,7 +11,7 @@ class PostModel(Base):
     content = Column(String, nullable=False)
     published = Column(Boolean, nullable= False, server_default="True")
     created_at = Column(TIMESTAMP(timezone=True), nullable= False, server_default=text('NOW()'))
-    owner_id = Column(INTEGER, ForeignKey("users.id"), nullable = False)
+    owner_id = Column(INTEGER, ForeignKey("users.id", ondelete="CASCADE"), nullable = False, )
 
 
 class UserModel(Base):
